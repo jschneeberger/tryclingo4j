@@ -7,32 +7,29 @@ import junit.framework.TestSuite;
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
+public class AppTest extends TestCase {
+	/**
+	 * Rigourous Test :-)
+	 */
+	public void testApp() {
+		Clingo.init("src/main/clingo");
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
+		try (Clingo control = Clingo.create()) {
+			System.out.println(control.getVersion());
+			control.add("base", "b :- not a. a :- not b.");
+			control.ground("base");
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
-    }
+			try (SolveHandle handle = control.solve()) {
+				for (Model model : handle) {
+					System.out.println("Model type: " + model.getType());
+					for (Symbol atom : model.getSymbols()) {
+						System.out.println(atom);
+					}
+				}
+			}
+		} catch (ClingoException ex) {
+			System.err.println(ex.getMessage());
+		}
+		assertTrue(true);
+	}
 }
